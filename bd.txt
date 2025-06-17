@@ -1,0 +1,127 @@
+-- Пользователи
+CREATE TABLE users (
+  user_id INT AUTO_INCREMENT PRIMARY KEY,
+  full_name VARCHAR(255) NOT NULL,
+  organization_name VARCHAR(255) NOT NULL,
+  role VARCHAR(50) NOT NULL,
+  login VARCHAR(191) UNIQUE NOT NULL,
+  password VARCHAR(191) NOT NULL,
+  email VARCHAR(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Ответственные педагоги (без связей)
+CREATE TABLE gifted_responsibles (
+  responsible_id INT AUTO_INCREMENT PRIMARY KEY,
+  teacher_name VARCHAR(255) NOT NULL,
+  organization_name VARCHAR(255) NOT NULL,
+  education_level VARCHAR(100),
+  qualification_category VARCHAR(100),
+  experience_years INT,
+  qualification_data TEXT,
+  position VARCHAR(100),
+  awards TEXT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Реализующие программы
+CREATE TABLE gifted_programs (
+  program_id INT AUTO_INCREMENT PRIMARY KEY,
+  implementer_full_name VARCHAR(255) NOT NULL,
+  program_name VARCHAR(255) NOT NULL,
+  direction VARCHAR(100),
+  student_count INT,
+  qualification_category VARCHAR(100),
+  experience_years INT,
+  qualification_data TEXT,
+  position VARCHAR(100),
+  awards TEXT,
+  annotation_link TEXT,
+  organization_name VARCHAR(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Дети
+CREATE TABLE children (
+  child_id INT AUTO_INCREMENT PRIMARY KEY,
+  full_name VARCHAR(255) NOT NULL,
+  birth_date DATE NOT NULL,
+  class VARCHAR(50),
+  association VARCHAR(100),
+  organization_name VARCHAR(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Конкурсы
+CREATE TABLE contests (
+  contest_id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  order_number VARCHAR(50),
+  level VARCHAR(100),
+  age_category VARCHAR(50),
+  description TEXT,
+  start_date DATE NOT NULL,
+  end_date DATE,
+  organization_name VARCHAR(255)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Участники конкурсов
+CREATE TABLE contest_participants (
+  participant_id INT AUTO_INCREMENT PRIMARY KEY,
+  contest_id INT NOT NULL,
+  organization_name VARCHAR(255) NOT NULL,
+  responsible_id INT,
+  child_id INT NOT NULL,
+  class VARCHAR(50),
+  association VARCHAR(100),
+  result VARCHAR(100),
+  FOREIGN KEY (contest_id) REFERENCES contests(contest_id) ON DELETE CASCADE,
+  FOREIGN KEY (child_id) REFERENCES children(child_id) ON DELETE CASCADE,
+  FOREIGN KEY (responsible_id) REFERENCES gifted_programs(program_id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Мероприятия
+CREATE TABLE events (
+  event_id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  event_date_time DATETIME NOT NULL,
+  location VARCHAR(255),
+  organizer VARCHAR(100),
+  age_category VARCHAR(50),
+  description TEXT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Участники мероприятий
+CREATE TABLE event_participants (
+  participant_id INT AUTO_INCREMENT PRIMARY KEY,
+  event_id INT NOT NULL,
+  organization_name VARCHAR(255) NOT NULL,
+  child_id INT NOT NULL,
+  class VARCHAR(50),
+  association VARCHAR(100),
+  responsible_id INT,
+  FOREIGN KEY (event_id) REFERENCES events(event_id) ON DELETE CASCADE,
+  FOREIGN KEY (child_id) REFERENCES children(child_id) ON DELETE CASCADE,
+  FOREIGN KEY (responsible_id) REFERENCES gifted_programs(program_id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Летние смены
+CREATE TABLE summer_sessions (
+  session_id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  start_date DATE NOT NULL,
+  end_date DATE NOT NULL,
+  age_category VARCHAR(50),
+  description TEXT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Участники летних смен
+CREATE TABLE summer_session_participants (
+  participant_id INT AUTO_INCREMENT PRIMARY KEY,
+  session_id INT NOT NULL,
+  organization_name VARCHAR(255) NOT NULL,
+  child_id INT NOT NULL,
+  class VARCHAR(50),
+  association VARCHAR(100),
+  responsible_id INT,
+  result VARCHAR(100),
+  FOREIGN KEY (session_id) REFERENCES summer_sessions(session_id) ON DELETE CASCADE,
+  FOREIGN KEY (child_id) REFERENCES children(child_id) ON DELETE CASCADE,
+  FOREIGN KEY (responsible_id) REFERENCES gifted_programs(program_id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
